@@ -1,0 +1,2 @@
+-module(activity, [Id, ClientId, Latitude, Longitude]).
+-compile([export_all]).

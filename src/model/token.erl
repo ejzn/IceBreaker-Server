@@ -1,0 +1,2 @@
+-module(token, [PhoneId, Expiry, Token]).
+-compile([export_all]).
