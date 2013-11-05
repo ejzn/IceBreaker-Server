@@ -1,2 +1,2 @@
--module(client, [Id, Firstname, Lastname, ImageUrl, Status]).
+-module(client, [Id, Firstname, Lastname, ImageUrl, Status, Headline]).
 -compile([export_all]).

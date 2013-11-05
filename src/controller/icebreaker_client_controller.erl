@@ -48,14 +48,15 @@ register('POST', []) ->
     Firstname = Req:post_param("firstname"),
     Lastname = Req:post_param("lastname"),
     ImageUrl = Req:post_param("image_url"),
+    Headline = Req:post_param("headline"),
     Status = Req:post_param("status"),
-    NewClient = client:new(id, Firstname, Lastname, ImageUrl, Status),
+    NewClient = client:new(id, Firstname, Lastname, ImageUrl, Status, Headline),
 
     %Token = token:new(NewClient:id(), edate:shift(erlang:localtime(), +1, months), base64:encode(crypto:strong_rand_bytes(Bytes)))
 
     case NewClient:save() of
         {ok, SavedClient} ->
-            {json, [{success, true}, {client, NewClient}]};
+            {json, [{success, true}, {client, SavedClient}]};
         {error, Reason} ->
             {json, [{success, false}]}
     end;
