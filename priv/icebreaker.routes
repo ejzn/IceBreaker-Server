@@ -17,8 +17,13 @@
     % Client Registration
     {"/client/register/(\d+)", [{controller, "client"}, {action, "register"}, {id, $1}]}.
     {"/client/register", [{controller, "client"}, {action, "register"}]}.
-
     {"/client/list", [{controller, "client"}, {action, "list"}]}.
+
+    % Client Messaging
+    {"/client/message/(\d+)", [{controller, "client"}, {action, "message"}, {id, $1}]}.
+    {"/client/message/list", [{controller, "client"}, {action, "messagelist"}]}.
+    {"/client/message", [{controller, "client"}, {action, "message"}]}.
+
 
     % Client Activity
     {"/client/activity/(\d+)", [{controller, "client"}, {action, "activity"}, {id, $1}]}.

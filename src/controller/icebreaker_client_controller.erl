@@ -79,6 +79,40 @@ register('POST', [Id]) ->
             {json, [{success, false}]}
      end.
 
+messagelist('GET', []) ->
 
+    PhoneId = Req:post_param("phone_id"),
+    GroupBy = Req:post_param("group_id"),
+    SortBy = Req:post_param("sort_by"),
 
+    MessageList = boss_db:find(message, []),
+    case MessageList of
+            [] ->
+                {output, <<"[]">>, [{"Content-Type", "application/json"}]};
+            _Else ->
+                {json, [{success, true}, {code, 1}, {messages, MessageList}]}
+    end.
 
+message('POST', []) ->
+
+    SourcePhone = Req:post_param("source_phone"),
+    DestPhone = Req:post_param("dest_phone"),
+    ThreadId = Req:post_param("thread_id"),
+    Text = Req:post_param("text"),
+    NewMessage = message:new(id, SourcePhone, DestPhone, ThreadId, Text, erlang:localtime()),
+
+    case NewMessage:save() of
+        {ok, SavedMessage} ->
+            {json, [{success, true}, {client, SavedMessage}]};
+        {error, Reason} ->
+            {json, [{success, false}]}
+    end;
+
+message('GET', [Id]) ->
+    Message = boss_db:find(message, [Id]),
+    case Message of
+            {} ->
+                {output, <<"{}">>, [{"Content-Type", "application/json"}]};
+            _Else ->
+                {json, [{success, true}, {code, 1}, {message, Message}]}
+    end.
