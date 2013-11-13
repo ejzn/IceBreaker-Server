@@ -93,26 +93,30 @@ messagelist('GET', []) ->
                 {json, [{success, true}, {code, 1}, {messages, MessageList}]}
     end.
 
+messageindex('GET', []) ->
+    ok.
+
 message('POST', []) ->
 
-    SourcePhone = Req:post_param("source_phone"),
-    DestPhone = Req:post_param("dest_phone"),
+    SourcePhone = Req:post_param("source_phone_id"),
+    DestPhone = Req:post_param("dest_phone_id"),
     ThreadId = Req:post_param("thread_id"),
     Text = Req:post_param("text"),
-    NewMessage = message:new(id, SourcePhone, DestPhone, ThreadId, Text, erlang:localtime()),
+    NewMessage = message:new(id, SourcePhone, DestPhone, ThreadId, Text, erlang:now(), false),
 
     case NewMessage:save() of
         {ok, SavedMessage} ->
-            {json, [{success, true}, {client, SavedMessage}]};
+            {json, [{success, true}, {message, SavedMessage}]};
         {error, Reason} ->
             {json, [{success, false}]}
     end;
 
-message('GET', [Id]) ->
-    Message = boss_db:find(message, [Id]),
+message('GET', []) ->
+    MessageId = Req:post_param("message_id"),
+    Message = boss_db:find(message, [{messageid, 'equals', MessageId}]),
     case Message of
-            {} ->
-                {output, <<"{}">>, [{"Content-Type", "application/json"}]};
-            _Else ->
-                {json, [{success, true}, {code, 1}, {message, Message}]}
+        [] ->
+            ok;
+        _Else ->
+            {json, [{success, true}, {code, 1}, {message, Message}]}
     end.

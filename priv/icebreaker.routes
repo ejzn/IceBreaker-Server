@@ -20,8 +20,8 @@
     {"/client/list", [{controller, "client"}, {action, "list"}]}.
 
     % Client Messaging
-    {"/client/message/(\d+)", [{controller, "client"}, {action, "message"}, {id, $1}]}.
     {"/client/message/list", [{controller, "client"}, {action, "messagelist"}]}.
+    {"/client/message/index", [{controller, "client"}, {action, "messageindex"}]}.
     {"/client/message", [{controller, "client"}, {action, "message"}]}.
 
 

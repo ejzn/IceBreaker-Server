@@ -1,2 +1,2 @@
--module(client, [Id, SourcePhone, DestPhone, ThreadId, Text, CreateDateTime, Deleted]).
+-module(message, [Id, SourcePhone, DestPhone, ThreadId, Text, CreateDateTime, Deleted]).
 -compile([export_all]).
