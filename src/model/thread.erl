@@ -1,3 +1,3 @@
--module(thread, [Id, CreateDateTime, LogicallyDeleted]).
+-module(thread, [Id, SourcePhoneId, DestPhoneId, CreateDateTime, LogicallyDeleted]).
 -compile(export_all).
 -has({messages, many}).

@@ -81,14 +81,13 @@ register('POST', [Id]) ->
 
 messagesbythread('GET', []) ->
     ThreadId = Req:param("thread_id"),
+    Thread = boss_db:find(thread, [{id, 'equals', ThreadId}]),
     io:format("Thread:  ~p~n", [ThreadId]),
-    Thread = boss_db:find(ThreadId),
-    io:format("Thread:  ~p~n", [Thread]),
     case Thread of
             undefined ->
                 {output, <<"[]">>, [{"Content-Type", "application/json"}]};
             _Else ->
-
+                io:format("Thread:  ~p~n", [Thread:messages()]),
                 {json, [{success, true}, {code, 1}, {messages, Thread:messages()}]}
     end.
 
@@ -96,7 +95,7 @@ messagesbythread('GET', []) ->
 threadlist('GET', []) ->
     PhoneId = Req:param("phone_id"),
 
-    ThreadList = boss_db:find(thread, []),
+    ThreadList = boss_db:find(thread, [{source_phone_id, PhoneId}]),
     case ThreadList of
             [] ->
                 {output, <<"[]">>, [{"Content-Type", "application/json"}]};
@@ -136,7 +135,7 @@ message('POST', []) ->
 
     NewMessage = case MsgThread of
         undefined ->
-            NewThread = thread:new(id, erlang:now(), false),
+            NewThread = thread:new(id, SourcePhone, DestPhone, erlang:now(), false),
             case NewThread:save() of
                 {ok, SavedThread} ->
                     message:new(id, SourcePhone, DestPhone, Text, erlang:now(), false, SavedThread:id())
