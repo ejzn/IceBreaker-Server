@@ -19,7 +19,9 @@
     {"/client/register", [{controller, "client"}, {action, "register"}]}.
     {"/client/list", [{controller, "client"}, {action, "list"}]}.
 
-    % Client Messaging
+    % Client Messaging messagebythread
+    {"/client/thread/list", [{controller, "client"}, {action, "threadlist"}]}.
+    {"/client/thread/messages", [{controller, "client"}, {action, "messagesbythread"}]}.
     {"/client/message/list", [{controller, "client"}, {action, "messagelist"}]}.
     {"/client/message/index", [{controller, "client"}, {action, "messageindex"}]}.
     {"/client/message", [{controller, "client"}, {action, "message"}]}.
