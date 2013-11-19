@@ -1,3 +1,3 @@
 -module(thread, [Id, CreateDateTime, LogicallyDeleted]).
+-compile(export_all).
 -has({messages, many}).
--compile([export_all]).

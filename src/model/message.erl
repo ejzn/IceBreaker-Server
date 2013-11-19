@@ -1,3 +1,3 @@
 -module(message, [Id, SourcePhone, DestPhone, Text, CreateDateTime, Deleted, ThreadId]).
 -belongs_to(thread).
--compile([export_all]).
+-compile(export_all).

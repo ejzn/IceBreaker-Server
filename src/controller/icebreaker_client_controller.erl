@@ -80,19 +80,21 @@ register('POST', [Id]) ->
      end.
 
 messagesbythread('GET', []) ->
-    ThreadId = Req:post_param("thread_id"),
-    Thread = boss_db:find(thread, [{thread_id, 'equals', ThreadId}]),
+    ThreadId = Req:param("thread_id"),
+    io:format("Thread:  ~p~n", [ThreadId]),
+    Thread = boss_db:find(ThreadId),
+    io:format("Thread:  ~p~n", [Thread]),
     case Thread of
-            [] ->
+            undefined ->
                 {output, <<"[]">>, [{"Content-Type", "application/json"}]};
             _Else ->
 
-                {json, [{success, true}, {code, 1}, {messages, Thread}]}
+                {json, [{success, true}, {code, 1}, {messages, Thread:messages()}]}
     end.
 
 
 threadlist('GET', []) ->
-    PhoneId = Req:post_param("phone_id"),
+    PhoneId = Req:param("phone_id"),
 
     ThreadList = boss_db:find(thread, []),
     case ThreadList of
@@ -126,21 +128,21 @@ message('POST', []) ->
     SourcePhone = Req:post_param("source_phone_id"),
     DestPhone = Req:post_param("dest_phone_id"),
     ThreadId = Req:post_param("thread_id"),
-    MsgThread = boss_db:find(thread,[{threadid, 'equals', ThreadId}]),
+    MsgThread = boss_db:find(ThreadId),
     Text = Req:post_param("text"),
 
     error_logger:info_msg("Thread found as ~p", [MsgThread]),
 
 
-    case MsgThread of
-        [] ->
+    NewMessage = case MsgThread of
+        undefined ->
             NewThread = thread:new(id, erlang:now(), false),
-            NewThread:save(),
-            error_logger:info_msg("Thread Saved as ~p", [NewThread]),
-
-            NewMessage = message:new(id, SourcePhone, DestPhone, Text, erlang:now(), false, NewThread);
+            case NewThread:save() of
+                {ok, SavedThread} ->
+                    message:new(id, SourcePhone, DestPhone, Text, erlang:now(), false, SavedThread:id())
+            end;
         _Else ->
-            NewMessage = message:new(id, SourcePhone, DestPhone, Text, erlang:now(), false, MsgThread)
+            message:new(id, SourcePhone, DestPhone, Text, erlang:now(), false, MsgThread:id())
     end,
 
     error_logger:info_msg("Thread Saved as ~p", [NewMessage]),
