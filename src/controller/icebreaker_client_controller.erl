@@ -6,7 +6,7 @@ index('GET', []) ->
     {output, "There is no front end for the API"}.
 
 list('GET', []) ->
-    Clients = boss_db:find(client, []),
+    Clients = boss_db:find(client, [{firstname, 'not_equals', "(null)"}]),
     case Clients of
             [] ->
                 {output, <<"[]">>, [{"Content-Type", "application/json"}]};
@@ -81,21 +81,21 @@ register('POST', [Id]) ->
 
 messagesbythread('GET', []) ->
     ThreadId = Req:param("thread_id"),
-    Thread = boss_db:find(thread, [{id, 'equals', ThreadId}]),
+    Messages = boss_db:find(message, [{thread_id, 'equals', ThreadId}]),
     io:format("Thread:  ~p~n", [ThreadId]),
-    case Thread of
+    case Messages of
             undefined ->
                 {output, <<"[]">>, [{"Content-Type", "application/json"}]};
             _Else ->
-                io:format("Thread:  ~p~n", [Thread:messages()]),
-                {json, [{success, true}, {code, 1}, {messages, Thread:messages()}]}
+                %io:format("Thread Messages:  ~p~n", Messages),
+                {json, [{success, true}, {code, 1}, {messages, Messages}]}
     end.
 
 
 threadlist('GET', []) ->
     PhoneId = Req:param("phone_id"),
 
-    ThreadList = boss_db:find(thread, [{source_phone_id, PhoneId}]),
+    ThreadList = boss_db:find(thread, [{dest_phone_id, PhoneId}]),
     case ThreadList of
             [] ->
                 {output, <<"[]">>, [{"Content-Type", "application/json"}]};
@@ -106,17 +106,18 @@ threadlist('GET', []) ->
 
 messagelist('GET', []) ->
 
-    PhoneId = Req:post_param("phone_id"),
-    GroupBy = Req:post_param("group_id"),
-    SortBy = Req:post_param("sort_by"),
+    PhoneId = Req:param("phone_id"),
+    io:format("Getting messages for phone_id: ~p~n", [PhoneId]),
+    GroupBy = Req:param("group_id"),
+    SortBy = Req:param("sort_by"),
 
-    MessageList = boss_db:find(message, []),
-    case MessageList of
+    Messages = boss_db:find(message, [{dest_phone, 'equals', PhoneId}]),
+    case Messages of
             [] ->
                 {output, <<"[]">>, [{"Content-Type", "application/json"}]};
             _Else ->
 
-                {json, [{success, true}, {code, 1}, {messages, MessageList}]}
+                {json, [{success, true}, {code, 1}, {messages, Messages}]}
     end.
 
 messageindex('GET', []) ->
@@ -138,13 +139,14 @@ message('POST', []) ->
             NewThread = thread:new(id, SourcePhone, DestPhone, erlang:now(), false),
             case NewThread:save() of
                 {ok, SavedThread} ->
+                    io:format("Saving thread as ~p", [SavedThread]),
                     message:new(id, SourcePhone, DestPhone, Text, erlang:now(), false, SavedThread:id())
             end;
         _Else ->
             message:new(id, SourcePhone, DestPhone, Text, erlang:now(), false, MsgThread:id())
     end,
 
-    error_logger:info_msg("Thread Saved as ~p", [NewMessage]),
+    error_logger:info_msg("Message Saved as ~p", [NewMessage]),
 
     case NewMessage:save() of
         {ok, SavedMessage} ->
